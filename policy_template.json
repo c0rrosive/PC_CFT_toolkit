@@ -1,0 +1,112 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateInstanceProfile",
+                "iam:GetRole",
+                "iam:GetPolicyVersion",
+                "iam:GetInstanceProfile",
+                "iam:GetPolicy",
+                "iam:CreateRole",
+                "iam:CreatePolicy",
+                "iam:AttachRolePolicy",
+                "iam:PutRolePolicy",
+                "iam:ListMFADevices",
+                "iam:AddRoleToInstanceProfile",
+                "iam:CreateServiceLinkedRole",
+                "iam:UpdateRole",
+                "iam:GetRolePolicy",
+                "iam:ListAccessKeys",
+                "iam:ListPolicyVersions",
+                "iam:CreatePolicyVersion",
+                "iam:DeletePolicyVersion"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:DeleteStackInstances",
+                "cloudformation:ListExports",
+                "cloudformation:ListStackInstances",
+                "s3:CreateBucket",
+                "cloudformation:DescribeStackResource",
+                "cloudformation:UpdateStackSet",
+                "cloudformation:CreateChangeSet",
+                "iam:PutRolePolicy",
+                "cloudformation:ContinueUpdateRollback",
+                "cloudformation:ListStackSetOperationResults",
+                "cloudformation:DescribeStackEvents",
+                "cloudformation:UpdateStack",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:CreateStackSet",
+                "cloudformation:ExecuteChangeSet",
+                "cloudformation:ListStackResources",
+                "iam:GetRole",
+                "cloudformation:DescribeStackInstance",
+                "cloudformation:DescribeStackResources",
+                "cloudformation:SignalResource",
+                "cloudformation:DescribeStacks",
+                "s3:PutObject",
+                "s3:GetObject",
+                "sts:AssumeRole",
+                "cloudformation:DescribeStackResourceDrifts",
+                "cloudformation:GetStackPolicy",
+                "organizations:Describe*",
+                "cloudformation:GetTemplate",
+                "cloudformation:DeleteStack",
+                "organizations:List*",
+                "cloudformation:UntagResource",
+                "cloudformation:ValidateTemplate",
+                "cloudformation:CreateUploadBucket",
+                "cloudformation:DetectStackSetDrift",
+                "cloudformation:ImportStacksToStackSet",
+                "cloudformation:DescribeStackDriftDetectionStatus",
+                "cloudformation:DetectStackDrift",
+                "cloudformation:CancelUpdateStack",
+                "cloudformation:UpdateStackInstances",
+                "cloudformation:ListStackSetOperations",
+                "cloudformation:ListTypes",
+                "cloudformation:UpdateTerminationProtection",
+                "cloudformation:RecordHandlerProgress",
+                "cloudformation:CreateStackInstances",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DetectStackResourceDrift",
+                "cloudformation:DescribeStackSetOperation",
+                "cloudformation:StopStackSetOperation",
+                "cloudformation:SetStackPolicy",
+                "cloudformation:ListStacks",
+                "cloudformation:DescribeType",
+                "cloudformation:ListImports",
+                "cloudformation:DeleteStackSet",
+                "cloudformation:GetTemplateSummary",
+                "s3:ListAllMyBuckets",
+                "cloudformation:DescribeStackSet",
+                "cloudformation:ListStackSets",
+                "cloudformation:CreateStack",
+                "cloudformation:TagResource",
+                "s3:GetBucketLocation",
+                "cloudformation:ListChangeSets"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListAccountAliases",
+                "iam:ListRoles",
+                "iam:GetAccountSummary"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
