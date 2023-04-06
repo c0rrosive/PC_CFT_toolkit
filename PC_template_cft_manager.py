@@ -1,50 +1,47 @@
-import time
-import json
-import urllib3
-import urllib
-urllib3.disable_warnings()
 from pcpi import saas_session_manager
-from loguru import logger
-from pcpi import session_loader
-import re
+import logging
 import boto3
+import re
+import urllib
+import time
 
-session_managers = session_loader.load_config()
-
-session_man = session_managers[0]
-
-cspm_session = session_man.create_cspm_session()
+py_logger = logging.getLogger()
+py_logger.setLevel(10)
 
 cloudformation_client = boto3.client('cloudformation')
 
-OU_org_ID = '<OU_id>'
+stack_name = 'PrismaCloudStack-org4'
 
-stack_name = 'PrismaCloudStack'
+account_name = 'aws_ORG_auto4'
 
-stack_params = [{'ParameterKey': 'PrismaCloudRoleName', 'ParameterValue': 'PrismaCloudRole-806775361903163392'}, {'ParameterKey': 'OrganizationalUnitIds', 'ParameterValue': OU_org_ID}]
+default_account_group_id = '6923b484-c564-46d5-a6c7-0d953f26d82d'
+#default_account_group_id =
+
+session_manager = saas_session_manager.SaaSSessionManager(
+    tenant_name='app3qa',
+    a_key='a-key',
+    s_key='s-key',
+    api_url='https://api4.prismacloud.io',
+    logger=py_logger
+)
+
+cspm_session = session_manager.create_cspm_session()
+
+
+def get_org_root():
+    client = boto3.client('organizations')
+    org_id = client.list_roots()['Roots'][0]['Id']
+    return(org_id)
+
+OU_org_ID = get_org_root()
+
+stack_params = [{'ParameterKey': 'OrganizationalUnitIds', 'ParameterValue': OU_org_ID}]
 
 def get_account_id():
-    sts = boto3.client("sts")
     account_id = boto3.client("sts").get_caller_identity()["Account"]
     return(account_id)
 
-def get_template():
-    payload = {"accountType": "organization","accountId": account_id,"features": ["Auto Protect","Serverless Function Scanning","Agentless Scanning","Remediation"]}
-    response = cspm_session.request('POST', '/cas/v1/aws_template', json=payload)
-    ext_id = response.json()['Resources']['PrismaCloudRole']['Properties']['AssumeRolePolicyDocument']['Statement'][0]['Condition']['StringEquals']['sts:ExternalId']
-    return(ext_id)
-
-def get_template():
-    payload = {"accountType": "organization","accountId": account_id,"features": ["Auto Protect","Serverless Function Scanning","Agentless Scanning","Remediation"]}
-    response = cspm_session.request('POST', '/cas/v1/aws_template', json=payload)
-    #ext_id = response.json()['Resources']['PrismaCloudRole']['Properties']['AssumeRolePolicyDocument']['Statement'][0]['Condition']['StringEquals']['sts:ExternalId']
-    return(response.text)
-
-def get_template_url_exid():
-    payload = {"accountType": "organization","accountId": account_id,"features": ["Auto Protect","Serverless Function Scanning","Agentless Scanning","Remediation"]}
-    response = cspm_session.request('POST', '/cas/v1/aws_template/presigned_url', json=payload)
-    external_id = response.json()['externalId']
-    return(external_id)
+account_id = get_account_id()
 
 def get_template_url_decoded():
     payload = {"accountType": "organization","accountId": account_id,"features": ["Auto Protect","Serverless Function Scanning","Agentless Scanning","Remediation"]}
@@ -54,6 +51,8 @@ def get_template_url_decoded():
     final_url = urllib.parse.unquote(t_url.group())
     return(final_url)
 
+
+template_url = get_template_url_decoded()
 
 def update_stack():
     cloudformation_client.update_stack(
@@ -86,10 +85,21 @@ def get_stackset_params():
     )
 
 def describe_stack():
-    print(cloudformation_client.describe_stacks(StackName = stack_name))
+    return(cloudformation_client.describe_stacks(StackName = stack_name))
 
-account_id = get_account_id()
-template_url = get_template_url_decoded()
+def config_account_aws(role_arn):
+    payload = {"accountId": account_id,"accountType": "organization","defaultAccountGroupId": default_account_group_id ,"enabled": True, "name": account_name, "roleArn": role_arn}
+    response = cspm_session.request('POST', '/cas/v1/aws_account', json=payload)
+    return(response.text)
+
+def first_run():
+    create_stack()
+    print('\n creating stack \n')
+    print('\n sleeping \n')
+    time.sleep(150)
+    role_arn = describe_stack()['Stacks'][0]['Outputs'][0]['OutputValue']
+    print('\n Configuring Prisma Cloud \n')
+    config_account_aws(role_arn)
 
 
 def run_cycle():
@@ -97,15 +107,14 @@ def run_cycle():
         describe_stack()
     except:
         pass
-        create_stack()
-        print('\n creating stack \n')
+        first_run()
     else:
         try:
             stack_params = get_stack_params()
             update_stack()
         except:
-            pass 
+            pass
             print('\n no update needed \n')
-        
 
-run_cycle() 
+def lambda_handler(event, context):
+    run_cycle()
