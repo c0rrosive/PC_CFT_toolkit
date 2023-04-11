@@ -62,7 +62,7 @@ def create_stack():
     cloudformation_client.create_stack(
         StackName=stack_name,
         TemplateURL=template_url,
-        Parameters=stack_params,
+        Parameters=[],
         DisableRollback=False,
         Capabilities=[
     'CAPABILITY_NAMED_IAM'
