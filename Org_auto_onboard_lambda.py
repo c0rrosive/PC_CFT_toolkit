@@ -79,9 +79,9 @@ def create_stack():
         EnableTerminationProtection=True
     )
 
-def get_stackset_params():
-    response = cloudformation_client.describe_stack_set(
-        StackSetName= stackset_name,
+def get_stack_params():
+    response = cloudformation_client.describe_stacks(
+        StackName= stack_name
     )
 
 def describe_stack():
