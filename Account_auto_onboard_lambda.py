@@ -10,18 +10,18 @@ py_logger.setLevel(10)
 
 cloudformation_client = boto3.client('cloudformation')
 
-stack_name = 'PrismaCloudStack-org4'
+stack_name = 'PrismaCloudStack-org3'
 
-account_name = 'aws_ORG_auto4'
+account_name = 'aws_ORG_auto3'
 
-default_account_group_id = '6923b484-c564-46d5-a6c7-0d953f26d82d'
+default_account_group_id = 'b4d6469f-c53a-42eb-85bd-a6af68806c1b'
 #default_account_group_id =
 
 session_manager = saas_session_manager.SaaSSessionManager(
     tenant_name='app3qa',
     a_key='a-key',
     s_key='s-key',
-    api_url='https://api4.prismacloud.io',
+    api_url='https://api3.prismacloud.io',
     logger=py_logger
 )
 
