@@ -22,7 +22,8 @@
                 "iam:ListAccessKeys",
                 "iam:ListPolicyVersions",
                 "iam:CreatePolicyVersion",
-                "iam:DeletePolicyVersion"
+                "iam:DeletePolicyVersion",
+                ﻿﻿"iam:CreatePolicy"
             ],
             "Resource": [
                 "*"
