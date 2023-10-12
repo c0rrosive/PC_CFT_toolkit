@@ -4,26 +4,52 @@ import boto3
 import re
 import urllib
 import time
+import json
+from botocore.exceptions import ClientError
 
 py_logger = logging.getLogger()
 py_logger.setLevel(10)
 
 cloudformation_client = boto3.client('cloudformation')
 
-stack_name = 'PrismaCloudStack-org4'
+stack_name = 'PrismaCloudStack-org-auto'
 
-account_name = 'aws_ORG_auto4'
+account_name = 'aws_ORG_auto_onboarded'
 
 default_account_group_id = '6923b484-c564-46d5-a6c7-0d953f26d82d'
 #default_account_group_id =
+def get_secret():
+    secret_name = "PC_credentials"
+    region_name = "us-east-1"
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+        raise e
+    # Decrypts secret using the associated KMS key.
+    secret = get_secret_value_response['SecretString']
+    return(json.loads(secret))
+    #
+
+secret = get_secret()
 
 session_manager = saas_session_manager.SaaSSessionManager(
     tenant_name='app3qa',
-    a_key='a-key',
-    s_key='s-key',
-    api_url='https://api4.prismacloud.io',
+    a_key = secret['PC_access_key'],
+    s_key = secret['PC_secret_key'],
+    api_url = secret['PC_url'],
     logger=py_logger
 )
+
 
 cspm_session = session_manager.create_cspm_session()
 
@@ -79,9 +105,9 @@ def create_stack():
         EnableTerminationProtection=True
     )
 
-def get_stack_params():
-    response = cloudformation_client.describe_stacks(
-        StackName= stack_name
+def get_stackset_params():
+    response = cloudformation_client.describe_stack_set(
+        StackSetName= stackset_name,
     )
 
 def describe_stack():
@@ -91,7 +117,16 @@ def config_account_aws(role_arn):
     payload = {"accountId": account_id,"accountType": "organization","defaultAccountGroupId": default_account_group_id ,"enabled": True, "name": account_name, "roleArn": role_arn}
     response = cspm_session.request('POST', '/cas/v1/aws_account', json=payload)
     return(response.text)
-
+#
+#def get_acct_groups():
+#    #payload =
+#    response = cspm_session.request('GET', '/cloud/group?excludeCloudAccountDetails=true')
+#    print(response.text)
+#
+#def get_cloud_accts():
+#    response = cspm_session.request('GET', '/cloud?excludeAccountGroupDetails=true')
+#    print(response.text)
+#
 def first_run():
     create_stack()
     print('\n creating stack \n')
@@ -108,6 +143,11 @@ def run_cycle():
     except:
         pass
         first_run()
+        #create_stack()
+        #print('\n creating stack \n')
+        #role_arn = describe_stack()['Stacks'][0]['Outputs'][0]['OutputValue']
+        #config_account_aws()
+        #print('\n Configuring Prisma Cloud \n')
     else:
         try:
             stack_params = get_stack_params()
