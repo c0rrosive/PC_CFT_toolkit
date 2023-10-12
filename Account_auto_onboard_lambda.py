@@ -64,7 +64,7 @@ def get_account_id():
 account_id = get_account_id()
 
 def get_template_url_decoded():
-    payload = {"accountType": "account","accountId": account_id,"features": ["Auto Protect","Serverless Function Scanning","Agentless Scanning","Remediation"]}
+    payload = {"accountType": "account","accountId": account_id,"features": ["Remediation","Data Security","Auto Protect","Agentless Scanning","Cloud Visibility Compliance and Governance","Serverless Function Scanning"]}
     response = cspm_session.request('POST', '/cas/v1/aws_template/presigned_url', json=payload)
     url = response.json()['createStackLinkWithS3PresignedUrl']
     t_url = re.search('(?<=templateURL=).*', url)
