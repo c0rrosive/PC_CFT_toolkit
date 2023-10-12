@@ -4,24 +4,53 @@ import boto3
 import re
 import urllib
 import time
+import json
+from botocore.exceptions import ClientError
 
 py_logger = logging.getLogger()
 py_logger.setLevel(10)
 
 cloudformation_client = boto3.client('cloudformation')
 
-stack_name = 'PrismaCloudStack-org3'
+stack_name = 'PrismaCloudStack-account2'
 
-account_name = 'aws_ORG_auto3'
+account_name = 'aws_acct_auto3'
 
-default_account_group_id = 'b4d6469f-c53a-42eb-85bd-a6af68806c1b'
+def get_secret():
+
+    secret_name = "PC_credentials2"
+    region_name = "us-east-1"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+        raise e
+
+    # Decrypts secret using the associated KMS key.
+    secret = get_secret_value_response['SecretString']
+    return(json.loads(secret))
+    
+secret = get_secret()
+
+default_account_group_id = 'd64537cb-b04b-40c0-b6d8-b27cf2f67f22'
 #default_account_group_id =
 
 session_manager = saas_session_manager.SaaSSessionManager(
     tenant_name='app3qa',
-    a_key='a-key',
-    s_key='s-key',
-    api_url='https://api3.prismacloud.io',
+    a_key = secret['PC_access_key'],
+    s_key = secret['PC_secret_key'],
+    api_url = secret['PC_url'],
     logger=py_logger
 )
 
