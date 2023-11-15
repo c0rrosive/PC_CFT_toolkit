@@ -80,7 +80,8 @@
                 "s3:GetBucketLocation",
                 "cloudformation:ListChangeSets",
                 "s3:GetObject",
-                "iam:CreatePolicy"
+                "iam:CreatePolicy",
+                "iam:﻿﻿ListPolicyVersions"
             ],
             "Resource": "*"
         },
