@@ -5,7 +5,7 @@
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
-                "cloudformation:DeleteStackInstances",
+               "cloudformation:DeleteStackInstances",
                 "cloudformation:ListExports",
                 "iam:GetPolicyVersion",
                 "cloudformation:ListStackInstances",
@@ -81,7 +81,9 @@
                 "cloudformation:ListChangeSets",
                 "s3:GetObject",
                 "iam:CreatePolicy",
-                "iam:﻿﻿ListPolicyVersions"
+                "iam:ListPolicyVersions",
+                "iam:CreatePolicyVersion",
+                "iam:DeletePolicyVersion"
             ],
             "Resource": "*"
         },
